@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import ApiKeyInput from './components/ApiKeyInput/ApiKeyInput';
 import BattleArena from './components/BattleArena/BattleArena';
 import BattleResults from './components/BattleResults/BattleResults';
+import BackendStatus from './components/BackendStatus/BackendStatus';
 import { fetchPokemonList, fetchFullPokemonData } from './services/pokeApi';
 import { useBattle } from './hooks/useBattle';
 import styles from './App.module.css';
@@ -84,6 +85,8 @@ function App() {
       </header>
 
       <main className={styles.main}>
+        <BackendStatus />
+        
         <BattleArena
           pokemonList={pokemonList}
           pokemon1={pokemon1}
