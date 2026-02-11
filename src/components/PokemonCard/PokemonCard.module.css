@@ -16,10 +16,20 @@
   transform: translateY(-2px);
 }
 
+.compact {
+  padding: var(--space-md);
+  min-width: 220px;
+  gap: var(--space-sm);
+}
+
 .empty {
   justify-content: center;
   min-height: 400px;
   opacity: 0.6;
+}
+
+.compact.empty {
+  min-height: 220px;
 }
 
 .silhouette {
@@ -34,6 +44,12 @@
   color: var(--color-text-muted);
 }
 
+.compact .silhouette {
+  width: 80px;
+  height: 80px;
+  font-size: 2rem;
+}
+
 .emptyText {
   color: var(--color-text-muted);
   font-size: 0.9rem;
@@ -44,6 +60,11 @@
   height: 180px;
   object-fit: contain;
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+}
+
+.compact .artwork {
+  width: 120px;
+  height: 120px;
 }
 
 .name {
@@ -58,6 +79,10 @@
   font-size: 0.85rem;
   color: var(--color-text-muted);
   font-weight: 400;
+}
+
+.compact .name {
+  font-size: 1rem;
 }
 
 .types {
