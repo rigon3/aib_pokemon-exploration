@@ -7,9 +7,11 @@ export default function BackendStatus() {
   const [loading, setLoading] = useState(false);
   const [testResult, setTestResult] = useState(null);
   const [testError, setTestError] = useState(null);
-  const [testPokemonId, setTestPokemonId] = useState(1);
-  const [predictP1Id, setPredictP1Id] = useState(1);
-  const [predictP2Id, setPredictP2Id] = useState(2);
+  const [testPokemonId, setTestPokemonId] = useState('1');
+  const [predictP1Id, setPredictP1Id] = useState('1');
+  const [predictP1Name, setPredictP1Name] = useState('');
+  const [predictP2Id, setPredictP2Id] = useState('2');
+  const [predictP2Name, setPredictP2Name] = useState('');
   const [predictResult, setPredictResult] = useState(null);
   const [predictError, setPredictError] = useState(null);
 
@@ -35,7 +37,8 @@ export default function BackendStatus() {
     setTestResult(null);
 
     try {
-      const data = await getPokemonFromBackend(testPokemonId);
+      const id = parseInt(testPokemonId) || testPokemonId;
+      const data = await getPokemonFromBackend(id);
       setTestResult(data);
     } catch (err) {
       setTestError(err.message);
@@ -50,7 +53,10 @@ export default function BackendStatus() {
     setPredictResult(null);
 
     try {
-      const data = await predictBattle(predictP1Id, predictP2Id);
+      const data = await predictBattle(
+        predictP1Name || parseInt(predictP1Id),
+        predictP2Name || parseInt(predictP2Id)
+      );
       setPredictResult(data);
     } catch (err) {
       setPredictError(err.message);
@@ -85,12 +91,10 @@ export default function BackendStatus() {
           
           <div className={styles.inputGroup}>
             <input
-              type="number"
-              min="1"
-              max="1025"
+              type="text"
               value={testPokemonId}
-              onChange={(e) => setTestPokemonId(parseInt(e.target.value) || 1)}
-              placeholder="Enter Pokemon ID"
+              onChange={(e) => setTestPokemonId(e.target.value)}
+              placeholder="Enter Pokemon ID or name"
               className={styles.input}
               disabled={loading}
             />
@@ -130,30 +134,53 @@ export default function BackendStatus() {
           <p className={styles.description}>/predict - Predict battle outcome</p>
           
           <div className={styles.inputGroup}>
-            <input
-              type="number"
-              min="1"
-              max="1025"
-              value={predictP1Id}
-              onChange={(e) => setPredictP1Id(parseInt(e.target.value) || 1)}
-              placeholder="Pokemon 1 ID"
-              className={styles.input}
-              disabled={loading}
-            />
-            <input
-              type="number"
-              min="1"
-              max="1025"
-              value={predictP2Id}
-              onChange={(e) => setPredictP2Id(parseInt(e.target.value) || 2)}
-              placeholder="Pokemon 2 ID"
-              className={styles.input}
-              disabled={loading}
-            />
+            <div style={{display: 'flex', gap: '1rem', flexWrap: 'wrap'}}>
+              <div style={{flex: 1, minWidth: '150px'}}>
+                <p style={{margin: '0 0 0.5rem 0', fontSize: '0.9rem', color: '#666'}}>Pokemon 1:</p>
+                <input
+                  type="text"
+                  value={predictP1Name}
+                  onChange={(e) => setPredictP1Name(e.target.value)}
+                  placeholder="Name (e.g., Charizard)"
+                  className={styles.input}
+                  disabled={loading}
+                  style={{marginBottom: '0.5rem'}}
+                />
+                <input
+                  type="text"
+                  value={predictP1Id}
+                  onChange={(e) => setPredictP1Id(e.target.value)}
+                  placeholder="or ID (e.g., 6)"
+                  className={styles.input}
+                  disabled={loading}
+                />
+              </div>
+              <div style={{flex: 1, minWidth: '150px'}}>
+                <p style={{margin: '0 0 0.5rem 0', fontSize: '0.9rem', color: '#666'}}>Pokemon 2:</p>
+                <input
+                  type="text"
+                  value={predictP2Name}
+                  onChange={(e) => setPredictP2Name(e.target.value)}
+                  placeholder="Name (e.g., Blastoise)"
+                  className={styles.input}
+                  disabled={loading}
+                  style={{marginBottom: '0.5rem'}}
+                />
+                <input
+                  type="text"
+                  value={predictP2Id}
+                  onChange={(e) => setPredictP2Id(e.target.value)}
+                  placeholder="or ID (e.g., 9)"
+                  className={styles.input}
+                  disabled={loading}
+                />
+              </div>
+            </div>
             <button 
               onClick={handleTestPredict} 
               disabled={loading}
               className={styles.button}
+              style={{marginTop: '1rem'}}
             >
               {loading ? 'Testing...' : 'Predict'}
             </button>
