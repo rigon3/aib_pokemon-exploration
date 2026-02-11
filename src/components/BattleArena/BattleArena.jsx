@@ -12,9 +12,11 @@ export default function BattleArena({
   battleStatus,
   apiKey,
   loadingPokemon,
+  solution,
 }) {
+  const requiresApiKey = solution === 'genai';
   const canBattle =
-    pokemon1 && pokemon2 && apiKey && battleStatus !== 'loading';
+    pokemon1 && pokemon2 && (!requiresApiKey || apiKey) && battleStatus !== 'loading';
 
   return (
     <div className={styles.arena}>
@@ -62,7 +64,10 @@ export default function BattleArena({
         )}
       </button>
 
-      {!apiKey && (
+      {!requiresApiKey && (
+        <p className={styles.hint}>Using Machine Learning backend</p>
+      )}
+      {requiresApiKey && !apiKey && (
         <p className={styles.hint}>Enter your Groq API key above to battle</p>
       )}
     </div>

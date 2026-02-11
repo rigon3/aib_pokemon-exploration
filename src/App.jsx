@@ -3,6 +3,7 @@ import ApiKeyInput from './components/ApiKeyInput/ApiKeyInput';
 import BattleArena from './components/BattleArena/BattleArena';
 import BattleResults from './components/BattleResults/BattleResults';
 import BackendStatus from './components/BackendStatus/BackendStatus';
+import SolutionSelector from './components/SolutionSelector/SolutionSelector';
 import { fetchPokemonList, fetchFullPokemonData } from './services/pokeApi';
 import { useBattle } from './hooks/useBattle';
 import styles from './App.module.css';
@@ -12,6 +13,7 @@ function App() {
   const [pokemon1, setPokemon1] = useState(null);
   const [pokemon2, setPokemon2] = useState(null);
   const [loadingPokemon, setLoadingPokemon] = useState(null);
+  const [solution, setSolution] = useState('genai');
   const [apiKey, setApiKey] = useState(
     () => localStorage.getItem('groq_api_key') || ''
   );
@@ -43,8 +45,9 @@ function App() {
   }, []);
 
   function handleBattle() {
-    if (pokemon1 && pokemon2 && apiKey) {
-      startBattle(pokemon1, pokemon2, apiKey);
+    const requiresApiKey = solution === 'genai';
+    if (pokemon1 && pokemon2 && (!requiresApiKey || apiKey)) {
+      startBattle(pokemon1, pokemon2, apiKey, solution);
     }
   }
 
@@ -85,6 +88,8 @@ function App() {
       </header>
 
       <main className={styles.main}>
+        <SolutionSelector selectedSolution={solution} onSelect={setSolution} />
+        
         <BackendStatus />
         
         <BattleArena
@@ -97,6 +102,7 @@ function App() {
           battleStatus={status}
           apiKey={apiKey}
           loadingPokemon={loadingPokemon}
+          solution={solution}
         />
 
         {error && (
