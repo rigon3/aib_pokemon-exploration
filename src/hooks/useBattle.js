@@ -6,12 +6,12 @@ export function useBattle() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
 
-  const startBattle = useCallback(async (pokemon1, pokemon2, apiKey) => {
+  const startBattle = useCallback(async (battleConfig) => {
     setStatus('loading');
     setResult(null);
     setError(null);
     try {
-      const analysis = await analyzeBattle(pokemon1, pokemon2, apiKey);
+      const analysis = await analyzeBattle(battleConfig);
       setResult(analysis);
       setStatus('done');
     } catch (err) {

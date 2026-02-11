@@ -1,4 +1,3 @@
-import TypeBadge from '../TypeBadge/TypeBadge';
 import { formatPokemonName } from '../../utils/formatters';
 import styles from './BattleResults.module.css';
 
@@ -25,26 +24,75 @@ function AdvantageList({ label, items }) {
   );
 }
 
-export default function BattleResults({ result, pokemon1, pokemon2 }) {
+export default function BattleResults({
+  result,
+  pokemon1,
+  pokemon2,
+  team1,
+  team2,
+  battleMode,
+}) {
   if (!result) return null;
 
-  const winnerName = formatPokemonName(result.winner);
+  const isTeamBattle = battleMode === '3v3';
+  const normalizedWinner = result.winner.toLowerCase();
+  const isTeam1Winner = isTeamBattle
+    ? normalizedWinner.includes('team 1') || normalizedWinner === 'team1'
+    : pokemon1?.name.toLowerCase() === normalizedWinner;
+  const isTeam2Winner = isTeamBattle
+    ? normalizedWinner.includes('team 2') || normalizedWinner === 'team2'
+    : pokemon2?.name.toLowerCase() === normalizedWinner;
+
+  const winnerName = isTeamBattle
+    ? isTeam1Winner
+      ? 'Team 1'
+      : isTeam2Winner
+        ? 'Team 2'
+        : formatPokemonName(result.winner)
+    : formatPokemonName(result.winner);
+
   const winnerPokemon =
-    pokemon1.name.toLowerCase() === result.winner.toLowerCase()
+    !isTeamBattle && pokemon1?.name.toLowerCase() === normalizedWinner
       ? pokemon1
-      : pokemon2.name.toLowerCase() === result.winner.toLowerCase()
+      : !isTeamBattle && pokemon2?.name.toLowerCase() === normalizedWinner
         ? pokemon2
         : null;
+  const winnerTeam = isTeamBattle
+    ? isTeam1Winner
+      ? team1
+      : isTeam2Winner
+        ? team2
+        : []
+    : [];
+
+  const side1Label = isTeamBattle
+    ? 'Team 1'
+    : formatPokemonName(pokemon1?.name || '');
+  const side2Label = isTeamBattle
+    ? 'Team 2'
+    : formatPokemonName(pokemon2?.name || '');
 
   return (
     <div className={styles.results}>
       <div className={styles.winnerBanner}>
-        {winnerPokemon && (
+        {!isTeamBattle && winnerPokemon && (
           <img
             src={winnerPokemon.sprites.animated || winnerPokemon.sprites.artwork}
             alt={winnerName}
             className={styles.winnerSprite}
           />
+        )}
+        {isTeamBattle && winnerTeam.length > 0 && (
+          <div className={styles.winnerTeam}>
+            {winnerTeam.map((pokemon) => (
+              <img
+                key={pokemon.id}
+                src={pokemon.sprites.animated || pokemon.sprites.artwork}
+                alt={pokemon.name}
+                className={styles.winnerTeamSprite}
+              />
+            ))}
+          </div>
         )}
         <div className={styles.winnerInfo}>
           <span className={styles.winnerLabel}>WINNER</span>
@@ -65,11 +113,11 @@ export default function BattleResults({ result, pokemon1, pokemon2 }) {
         <Section title="Type Analysis">
           <div className={styles.columns}>
             <AdvantageList
-              label={formatPokemonName(pokemon1.name)}
+              label={side1Label}
               items={result.typeAnalysis.pokemon1Advantages}
             />
             <AdvantageList
-              label={formatPokemonName(pokemon2.name)}
+              label={side2Label}
               items={result.typeAnalysis.pokemon2Advantages}
             />
           </div>
@@ -81,11 +129,11 @@ export default function BattleResults({ result, pokemon1, pokemon2 }) {
         <Section title="Stats Comparison">
           <div className={styles.columns}>
             <AdvantageList
-              label={formatPokemonName(pokemon1.name)}
+              label={side1Label}
               items={result.statsComparison.pokemon1Strengths}
             />
             <AdvantageList
-              label={formatPokemonName(pokemon2.name)}
+              label={side2Label}
               items={result.statsComparison.pokemon2Strengths}
             />
           </div>
@@ -97,11 +145,11 @@ export default function BattleResults({ result, pokemon1, pokemon2 }) {
         <Section title="Abilities Analysis">
           <div className={styles.columns}>
             <AdvantageList
-              label={formatPokemonName(pokemon1.name)}
+              label={side1Label}
               items={result.abilitiesAnalysis.pokemon1KeyAbilities}
             />
             <AdvantageList
-              label={formatPokemonName(pokemon2.name)}
+              label={side2Label}
               items={result.abilitiesAnalysis.pokemon2KeyAbilities}
             />
           </div>
@@ -113,11 +161,11 @@ export default function BattleResults({ result, pokemon1, pokemon2 }) {
         <Section title="Move Pool Analysis">
           <div className={styles.columns}>
             <AdvantageList
-              label={formatPokemonName(pokemon1.name)}
+              label={side1Label}
               items={result.movePoolAnalysis.pokemon1KeyMoves}
             />
             <AdvantageList
-              label={formatPokemonName(pokemon2.name)}
+              label={side2Label}
               items={result.movePoolAnalysis.pokemon2KeyMoves}
             />
           </div>

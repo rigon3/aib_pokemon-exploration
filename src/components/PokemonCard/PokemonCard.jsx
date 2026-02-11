@@ -5,10 +5,14 @@ import styles from './PokemonCard.module.css';
 
 const STAT_ORDER = ['hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed'];
 
-export default function PokemonCard({ pokemon }) {
+export default function PokemonCard({ pokemon, variant = 'full' }) {
+  const isCompact = variant === 'compact';
+
   if (!pokemon) {
     return (
-      <div className={`${styles.card} ${styles.empty}`}>
+      <div
+        className={`${styles.card} ${styles.empty} ${isCompact ? styles.compact : ''}`}
+      >
         <div className={styles.silhouette}>?</div>
         <p className={styles.emptyText}>Select a Pokemon</p>
       </div>
@@ -16,7 +20,7 @@ export default function PokemonCard({ pokemon }) {
   }
 
   return (
-    <div className={styles.card}>
+    <div className={`${styles.card} ${isCompact ? styles.compact : ''}`}>
       <img
         src={pokemon.sprites.artwork}
         alt={pokemon.name}
@@ -31,24 +35,28 @@ export default function PokemonCard({ pokemon }) {
           <TypeBadge key={t} type={t} />
         ))}
       </div>
-      <div className={styles.stats}>
-        {STAT_ORDER.map((stat) => (
-          <StatBar key={stat} statName={stat} value={pokemon.stats[stat]} />
-        ))}
-      </div>
-      <div className={styles.info}>
-        <span>BST: {pokemon.totalStats}</span>
-        <span>{formatHeight(pokemon.height)}</span>
-        <span>{formatWeight(pokemon.weight)}</span>
-      </div>
-      <div className={styles.abilities}>
-        {pokemon.abilities.map((a) => (
-          <span key={a.name} className={styles.ability}>
-            {a.name.replace('-', ' ')}
-            {a.isHidden && <span className={styles.hidden}> (H)</span>}
-          </span>
-        ))}
-      </div>
+      {!isCompact && (
+        <>
+          <div className={styles.stats}>
+            {STAT_ORDER.map((stat) => (
+              <StatBar key={stat} statName={stat} value={pokemon.stats[stat]} />
+            ))}
+          </div>
+          <div className={styles.info}>
+            <span>BST: {pokemon.totalStats}</span>
+            <span>{formatHeight(pokemon.height)}</span>
+            <span>{formatWeight(pokemon.weight)}</span>
+          </div>
+          <div className={styles.abilities}>
+            {pokemon.abilities.map((a) => (
+              <span key={a.name} className={styles.ability}>
+                {a.name.replace('-', ' ')}
+                {a.isHidden && <span className={styles.hidden}> (H)</span>}
+              </span>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
